@@ -10,6 +10,8 @@ int DecompressLevel(){
   rewIndex = 0;
   LifoReset();
 
+  saveSettings();
+
   if(selectedItemIndex == 0) level = CurrentLevel;
   else level = CurrentExtraLevel;
 
@@ -192,21 +194,19 @@ void PlayLevelCompleteSound(){
 //Check if level is solved
 void CheckLevelSolved(){
   if(cratesLeft == 0 && !crateIsMoving){
-    if(CurrentLevel < LEVEL_COUNT - 1){
       PrintLevelComplete();
-          display->commit();
-          PlayLevelCompleteSound();
-          delay(1000);
+      display->commit();
+      PlayLevelCompleteSound();
+      delay(1000);
       if(selectedItemIndex == 0) {
         //Check if max level is reached
-        if(CurrentLevel < LEVEL_COUNT) CurrentLevel++;
+        if(CurrentLevel < LEVEL_COUNT - 1) CurrentLevel++;
         else CurrentScene = SCENE_MENU;
       }
       else {
-        if(CurrentExtraLevel < EXTRA_LEVEL_COUNT) CurrentExtraLevel++;
+        if(CurrentExtraLevel < EXTRA_LEVEL_COUNT - 1) CurrentExtraLevel++;
         else CurrentScene = SCENE_MENU;
       }
       DecompressLevel();
-    }
   }
 }

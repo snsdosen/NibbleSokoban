@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <CircuitOS.h>
 #include <Nibble.h>
+#include <EEPROM.h>
 
 //Binary data for all of the 50 original levels
 #include "src/levels.h"
@@ -15,7 +16,7 @@
 #include "src/sprites.h"
 
 //Game version
-#define GAME_VERSION    "1.0"
+#define GAME_VERSION    "1.1"
 
 //For debugging purposes
 //#define DEBUG
@@ -48,7 +49,7 @@
 #define DIR_RIGHT   3
 
 //Scenes throughout the game
-#define SCENE_INTRO   0
+#define SCENE_SLOTS   0
 #define SCENE_MENU    1
 #define SCENE_LOAD    2
 #define SCENE_GAME    3
@@ -58,7 +59,8 @@
 #define MODE_EXTRA    1
 
 //Timeouts
-#define D_PAD_TIMEOUT 4
+#define D_PAD_TIMEOUT   4
+#define SD_PAD_TIMEOUT  8
 
 //LIFO rewind stack
 byte* rewStack = NULL;
@@ -79,11 +81,14 @@ bool cFlag = false;
 //D-pad timeouts
 int dPadTimeout = 0;
 
+//Buttons timeout
+bool aTimeout = false;
+
 //Time tracking for timed events
 unsigned long previousMillis = 0;
 const long interval = 30;
 
-int CurrentScene = SCENE_INTRO;
+int CurrentScene = SCENE_SLOTS;
 int CurrentLevel = 0;       //Currently active level
 int CurrentExtraLevel = 0;  //Currently active extra level
 char* levelString = "XX:XX";
@@ -109,6 +114,10 @@ int crateY = 0;
 
 //Crates
 int cratesLeft = 0;
+
+//Slot handling
+int slotsSelector = 0;
+byte savedSlots[6] = {0, 0, 0, 0, 0, 0};
 
 Display* display;
 Sprite* sprite;
@@ -151,6 +160,11 @@ void setup() {
   if(!LifoCreate()){
     while(true)yield();
   }
+
+  EEPROM.begin(512);
+
+  //Load settings from EEPROM
+  loadSettings();
   
   RegisterButtonCallbacks();
 

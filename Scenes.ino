@@ -2,8 +2,9 @@
 
 void RunScene(){
   switch(CurrentScene){
-    case SCENE_INTRO:
-      CurrentScene++;
+    case SCENE_SLOTS:
+      SlotSelection();
+      //CurrentScene++;
       break;
 
     case SCENE_MENU:

@@ -94,8 +94,9 @@ void MainMenu(){
   if(leftFlag && dPadTimeout == 0) DecrementLevelSelector();
   if(rightFlag && dPadTimeout == 0) IncrementLevelSelector();
 
-  if(aFlag) ConfirmSelection();
-
+  if(aFlag && !aTimeout) ConfirmSelection();
+  if(!aFlag) aTimeout = false;
+  
   //Decrement timeout
   if(dPadTimeout > 0) dPadTimeout--;
 }
